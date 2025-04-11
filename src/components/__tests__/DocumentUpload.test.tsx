@@ -1,58 +1,71 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import DocumentUpload from '../DocumentUpload';
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import DocumentUpload from "../DocumentUpload";
 
-describe('DocumentUpload', () => {
+// Define proper types for FileReader
+interface FileReaderEventTarget extends EventTarget {
+  result: string;
+}
+
+interface FileReaderEvent extends Event {
+  target: FileReaderEventTarget;
+}
+
+describe("DocumentUpload", () => {
   const mockOnFileUpload = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock FileReader
-    (window as any).FileReader = vi.fn().mockImplementation(() => ({
-      readAsText: function(file: File) {
-        this.onload({ target: { result: 'test content' } });
-      },
-      onload: null as any,
-      onerror: null as any
-    }));
   });
 
-  it('renders upload area', () => {
-    render(<DocumentUpload onFileUpload={mockOnFileUpload} />);
-    expect(screen.getByText(/Click or drag a document here/i)).toBeDefined();
-    expect(screen.getByText(/Supported formats/i)).toBeDefined();
+  it("renders upload area", () => {
+    const { container } = render(
+      <DocumentUpload onFileUpload={mockOnFileUpload} />,
+    );
+    const uploadButton = container.querySelector(".document-upload");
+    expect(uploadButton).toBeDefined();
+    expect(uploadButton).toHaveTextContent(/Click or drag a document here/i);
+    expect(uploadButton).toHaveTextContent(/Supported formats/i);
   });
 
-  it('handles file input change', async () => {
-    const file = new File(['test content'], 'test.md', { type: 'text/markdown' });
-    const { container } = render(<DocumentUpload onFileUpload={mockOnFileUpload} />);
-    
-    const input = container.querySelector('input[type="file"]');
+  it("handles file input change", async () => {
+    const file = new File(["test content"], "test.md", {
+      type: "text/markdown",
+    });
+    const { container } = render(
+      <DocumentUpload onFileUpload={mockOnFileUpload} />,
+    );
+
+    const input = container.querySelector("input[type='file']");
     expect(input).toBeDefined();
 
     if (input) {
-      Object.defineProperty(input, 'files', {
-        value: [file]
+      Object.defineProperty(input, "files", {
+        value: [file],
       });
 
       await fireEvent.change(input);
-      
-      expect(mockOnFileUpload).toHaveBeenCalledWith('test content', 'test.md');
+
+      expect(mockOnFileUpload).toHaveBeenCalledWith("test content", "test.md");
     }
   });
 
-  it('handles file drop', async () => {
-    const file = new File(['test content'], 'test.md', { type: 'text/markdown' });
-    const { container } = render(<DocumentUpload onFileUpload={mockOnFileUpload} />);
-    
-    const dropZone = container.querySelector('.document-upload');
+  it("handles file drop", async () => {
+    const file = new File(["test content"], "test.md", {
+      type: "text/markdown",
+    });
+    const { container } = render(
+      <DocumentUpload onFileUpload={mockOnFileUpload} />,
+    );
+
+    const dropZone = container.querySelector(".document-upload");
     expect(dropZone).toBeDefined();
 
     if (dropZone) {
       const dropEvent = createDropEvent([file]);
       await fireEvent.drop(dropZone, dropEvent);
-      
-      expect(mockOnFileUpload).toHaveBeenCalledWith('test content', 'test.md');
+
+      expect(mockOnFileUpload).toHaveBeenCalledWith("test content", "test.md");
     }
   });
 });
@@ -62,12 +75,12 @@ function createDropEvent(files: File[]) {
   return {
     dataTransfer: {
       files,
-      items: files.map(file => ({
-        kind: 'file',
+      items: files.map((file) => ({
+        kind: "file",
         type: file.type,
-        getAsFile: () => file
+        getAsFile: () => file,
       })),
-      types: ['Files']
-    }
+      types: ["Files"],
+    },
   };
-} 
+}
