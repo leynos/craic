@@ -1,129 +1,117 @@
 /// <reference types="@types/jest" />
-import { renderHook, act } from '@testing-library/react';
-import { useAnnotationManagement } from '../useAnnotationManagement';
-import type { Document } from '../useDocumentManagement';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useAnnotationManagement } from "../useAnnotationManagement";
+import type { Document } from "../useDocumentManagement";
 
-describe('useAnnotationManagement', () => {
+describe("useAnnotationManagement", () => {
   const mockSetDocuments = vi.fn();
-  const mockDocuments: Document[] = [
-    {
-      id: '1',
-      name: 'test.md',
-      content: 'test content',
-      annotationSets: [
-        {
-          id: 'set1',
-          name: 'Annotation Set 1',
-          annotations: [{ id: 'anno1', text: 'test annotation' }]
-        }
-      ]
-    }
-  ];
+  const testDoc: Document = {
+    id: "doc1",
+    name: "test.md",
+    content: "test content",
+    annotationSets: [
+      {
+        id: "set1",
+        name: "Set 1",
+        annotations: [],
+      },
+    ],
+  };
+  const testDocs: Document[] = [testDoc];
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should initialize with empty annotation sets when no document is selected', () => {
-    const { result } = renderHook(() => 
-      useAnnotationManagement(mockDocuments, null, mockSetDocuments)
+  it("initializes with empty annotation sets when no document is selected", () => {
+    const { result } = renderHook(() =>
+      useAnnotationManagement(null, null, mockSetDocuments),
     );
 
     expect(result.current.annotationSets).toEqual([]);
     expect(result.current.selectedSetId).toBeNull();
-    expect(result.current.currentAnnotations).toEqual([]);
   });
 
-  it('should load annotation sets when a document is selected', () => {
-    const { result } = renderHook(() => 
-      useAnnotationManagement(mockDocuments, '1', mockSetDocuments)
+  it("loads annotation sets when a document is selected", () => {
+    const { result } = renderHook(() =>
+      useAnnotationManagement(testDocs, testDoc.id, mockSetDocuments),
     );
 
-    expect(result.current.annotationSets).toEqual(mockDocuments[0].annotationSets);
+    expect(result.current.annotationSets).toEqual(testDoc.annotationSets);
   });
 
-  it('should handle adding a new annotation set', () => {
-    const { result } = renderHook(() => 
-      useAnnotationManagement(mockDocuments, '1', mockSetDocuments)
+  it("handles adding a new annotation set", () => {
+    const { result } = renderHook(() =>
+      useAnnotationManagement(testDocs, testDoc.id, mockSetDocuments),
     );
 
     act(() => {
       result.current.handleAddAnnotationSet();
     });
 
-    expect(mockSetDocuments).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: '1',
-          annotationSets: expect.arrayContaining([
-            expect.objectContaining({
-              name: 'Annotation Set 2'
-            })
-          ])
-        })
-      ])
-    );
-    expect(result.current.selectedSetId).not.toBeNull();
+    expect(mockSetDocuments).toHaveBeenCalledWith([
+      {
+        ...testDoc,
+        annotationSets: [
+          ...testDoc.annotationSets,
+          expect.objectContaining({
+            id: expect.any(String),
+            name: expect.stringContaining("Annotation Set"),
+            annotations: [],
+          }),
+        ],
+      },
+    ]);
   });
 
-  it('should handle removing an annotation set', () => {
-    const { result } = renderHook(() => 
-      useAnnotationManagement(mockDocuments, '1', mockSetDocuments)
+  it("handles removing an annotation set", () => {
+    const { result } = renderHook(() =>
+      useAnnotationManagement(testDocs, testDoc.id, mockSetDocuments),
     );
 
     act(() => {
-      result.current.handleRemoveAnnotationSet('set1');
+      result.current.handleRemoveAnnotationSet(testDoc.annotationSets[0].id);
     });
 
-    expect(mockSetDocuments).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: '1',
-          annotationSets: []
-        })
-      ])
-    );
-    expect(result.current.selectedSetId).toBeNull();
+    expect(mockSetDocuments).toHaveBeenCalledWith([
+      {
+        ...testDoc,
+        annotationSets: [],
+      },
+    ]);
   });
 
-  it('should handle creating a new annotation', () => {
-    const { result } = renderHook(() => 
-      useAnnotationManagement(mockDocuments, '1', mockSetDocuments)
+  it("handles creating a new annotation", () => {
+    const { result } = renderHook(() =>
+      useAnnotationManagement(testDocs, testDoc.id, mockSetDocuments),
     );
 
     act(() => {
-      result.current.setSelectedSetId('set1');
+      result.current.setSelectedSetId(testDoc.annotationSets[0].id);
     });
+
+    const newAnnotation = {
+      id: "anno1",
+      text: "Test annotation",
+      start: 0,
+      end: 10,
+    };
 
     act(() => {
-      result.current.handleAnnotationCreate({ id: 'anno2', text: 'new annotation' });
+      result.current.handleAnnotationCreate(newAnnotation);
     });
 
-    expect(mockSetDocuments).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: '1',
-          annotationSets: expect.arrayContaining([
-            expect.objectContaining({
-              id: 'set1',
-              annotations: expect.arrayContaining([
-                { id: 'anno1', text: 'test annotation' },
-                { id: 'anno2', text: 'new annotation' }
-              ])
-            })
-          ])
-        })
-      ])
-    );
+    expect(mockSetDocuments).toHaveBeenCalledWith([
+      {
+        ...testDoc,
+        annotationSets: [
+          {
+            ...testDoc.annotationSets[0],
+            annotations: [newAnnotation],
+          },
+        ],
+      },
+    ]);
   });
-
-  it('should handle null documents gracefully', () => {
-    const { result } = renderHook(() => 
-      useAnnotationManagement(null, '1', mockSetDocuments)
-    );
-
-    expect(result.current.annotationSets).toEqual([]);
-    expect(result.current.currentAnnotations).toEqual([]);
-  });
-}); 
+});

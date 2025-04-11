@@ -1,9 +1,10 @@
-import React from 'react';
+import type React from "react";
+import type { Annotation } from "../hooks/useDocumentManagement";
 
 interface AnnotationSet {
   id: string;
   name: string;
-  annotations: any[];
+  annotations: Annotation[];
 }
 
 interface DocumentMenuProps {
@@ -26,7 +27,7 @@ const DocumentMenu: React.FC<DocumentMenuProps> = ({
       <div className="annotation-set-selector">
         <h3>Annotation Sets</h3>
         <select
-          value={selectedSetId || ''}
+          value={selectedSetId || ""}
           onChange={(e) => onSelectSet(e.target.value || null)}
         >
           <option value="">Select an annotation set</option>
@@ -37,9 +38,11 @@ const DocumentMenu: React.FC<DocumentMenuProps> = ({
           ))}
         </select>
         <div className="annotation-set-actions">
-          <button onClick={onAddSet}>Add Set</button>
+          <button type="button" onClick={onAddSet}>
+            Add Set
+          </button>
           {selectedSetId && (
-            <button onClick={() => onRemoveSet(selectedSetId)}>
+            <button type="button" onClick={() => onRemoveSet(selectedSetId)}>
               Remove Set
             </button>
           )}
@@ -49,4 +52,4 @@ const DocumentMenu: React.FC<DocumentMenuProps> = ({
   );
 };
 
-export default DocumentMenu; 
+export default DocumentMenu;

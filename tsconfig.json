@@ -15,9 +15,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom", "react", "react-dom"],
+    "types": [
+      "vitest/globals",
+      "@testing-library/jest-dom",
+      "react",
+      "react-dom"
+    ],
     "esModuleInterop": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
-} 
+}

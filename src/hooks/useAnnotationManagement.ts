@@ -1,20 +1,28 @@
-import { useState, useEffect } from 'react';
-import useLocalStorageState from 'use-local-storage-state';
-import { Document, AnnotationSet } from './useDocumentManagement';
+import { useEffect, useState } from "react";
+import useLocalStorageState from "use-local-storage-state";
+import type {
+  Annotation,
+  AnnotationSet,
+  Document,
+} from "./useDocumentManagement";
 
 export function useAnnotationManagement(
   documents: Document[] | null | undefined,
   selectedDocId: string | null,
-  setDocuments: (value: Document[]) => void
+  setDocuments: (value: Document[]) => void,
 ) {
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
-  const [annotationSets, setAnnotationSets] = useLocalStorageState<AnnotationSet[]>('annotationSets', {
-    defaultValue: []
+  const [annotationSets, setAnnotationSets] = useLocalStorageState<
+    AnnotationSet[]
+  >("annotationSets", {
+    defaultValue: [],
   });
 
-  const currentAnnotations = documents?.find(doc => doc.id === selectedDocId)
-    ?.annotationSets.find(set => set.id === selectedSetId)
-    ?.annotations || [];
+  const currentAnnotations =
+    documents
+      ?.find((doc) => doc.id === selectedDocId)
+      ?.annotationSets.find((set) => set.id === selectedSetId)?.annotations ||
+    [];
 
   const handleAddAnnotationSet = () => {
     if (!selectedDocId || !documents) return;
@@ -22,14 +30,16 @@ export function useAnnotationManagement(
     const newSet: AnnotationSet = {
       id: Date.now().toString(),
       name: `Annotation Set ${annotationSets.length + 1}`,
-      annotations: []
+      annotations: [],
     };
 
-    setDocuments(documents.map(doc => 
-      doc.id === selectedDocId 
-        ? { ...doc, annotationSets: [...doc.annotationSets, newSet] }
-        : doc
-    ));
+    setDocuments(
+      documents.map((doc) =>
+        doc.id === selectedDocId
+          ? { ...doc, annotationSets: [...doc.annotationSets, newSet] }
+          : doc,
+      ),
+    );
     setAnnotationSets([...(annotationSets || []), newSet]);
     setSelectedSetId(newSet.id);
   };
@@ -37,44 +47,51 @@ export function useAnnotationManagement(
   const handleRemoveAnnotationSet = (id: string) => {
     if (!selectedDocId || !documents) return;
 
-    setDocuments(documents.map(doc => 
-      doc.id === selectedDocId 
-        ? { ...doc, annotationSets: doc.annotationSets.filter(set => set.id !== id) }
-        : doc
-    ));
-    setAnnotationSets((annotationSets || []).filter(set => set.id !== id));
+    setDocuments(
+      documents.map((doc) =>
+        doc.id === selectedDocId
+          ? {
+              ...doc,
+              annotationSets: doc.annotationSets.filter((set) => set.id !== id),
+            }
+          : doc,
+      ),
+    );
+    setAnnotationSets((annotationSets || []).filter((set) => set.id !== id));
     if (selectedSetId === id) {
       setSelectedSetId(null);
     }
   };
 
-  const handleAnnotationCreate = (annotation: any) => {
+  const handleAnnotationCreate = (annotation: Annotation) => {
     if (selectedDocId && selectedSetId && documents) {
-      setDocuments(documents.map(doc => 
-        doc.id === selectedDocId 
-          ? {
-              ...doc,
-              annotationSets: doc.annotationSets.map(set => 
-                set.id === selectedSetId 
-                  ? { ...set, annotations: [...set.annotations, annotation] }
-                  : set
-              )
-            }
-          : doc
-      ));
+      setDocuments(
+        documents.map((doc) =>
+          doc.id === selectedDocId
+            ? {
+                ...doc,
+                annotationSets: doc.annotationSets.map((set) =>
+                  set.id === selectedSetId
+                    ? { ...set, annotations: [...set.annotations, annotation] }
+                    : set,
+                ),
+              }
+            : doc,
+        ),
+      );
     }
   };
 
   useEffect(() => {
     if (selectedDocId && documents) {
-      const doc = documents.find(d => d.id === selectedDocId);
+      const doc = documents.find((d) => d.id === selectedDocId);
       setAnnotationSets(doc?.annotationSets || []);
       setSelectedSetId(null);
     } else {
       setAnnotationSets([]);
       setSelectedSetId(null);
     }
-  }, [selectedDocId, documents]);
+  }, [selectedDocId, documents, setAnnotationSets]);
 
   return {
     annotationSets,
@@ -83,6 +100,6 @@ export function useAnnotationManagement(
     currentAnnotations,
     handleAddAnnotationSet,
     handleRemoveAnnotationSet,
-    handleAnnotationCreate
+    handleAnnotationCreate,
   };
-} 
+}

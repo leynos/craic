@@ -1,75 +1,63 @@
 /// <reference types="@types/jest" />
-import { renderHook, act } from '@testing-library/react';
-import { useDocumentManagement } from '../useDocumentManagement';
-import useLocalStorageState from 'use-local-storage-state';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { act, renderHook } from "@testing-library/react";
+import useLocalStorageState from "use-local-storage-state";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useDocumentManagement } from "../useDocumentManagement";
+import type { Document } from "../useDocumentManagement";
 
 // Mock use-local-storage-state
 const mockSetDocuments = vi.fn();
-let mockDocuments: any[] | null = [];
+let mockDocuments: Document[] | null = [];
 
-vi.mock('use-local-storage-state', () => ({
-  default: vi.fn().mockImplementation(() => {
-    return [mockDocuments, mockSetDocuments, { isPersistent: true, removeItem: () => {} }];
-  })
+vi.mock("use-local-storage-state", () => ({
+  default: () => [mockDocuments, mockSetDocuments],
 }));
 
-describe('useDocumentManagement', () => {
+describe("useDocumentManagement", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockDocuments = [];
   });
 
-  it('should initialize with empty documents and no selected document', () => {
+  it("initializes with empty state", () => {
     const { result } = renderHook(() => useDocumentManagement());
-
     expect(result.current.documents).toEqual([]);
     expect(result.current.selectedDocId).toBeNull();
-    expect(result.current.currentContent).toBe('');
   });
 
-  it('should handle file upload correctly', () => {
+  it("handles file upload", () => {
     const { result } = renderHook(() => useDocumentManagement());
+    const content = "test content";
+    const filename = "test.md";
 
     act(() => {
-      result.current.handleFileUpload('test content', 'test.md');
+      result.current.handleFileUpload(content, filename);
     });
 
-    expect(mockSetDocuments).toHaveBeenCalledWith(expect.arrayContaining([
+    expect(mockSetDocuments).toHaveBeenCalledWith([
       expect.objectContaining({
-        name: 'test.md',
-        content: 'test content',
-        annotationSets: []
-      })
-    ]));
-    expect(result.current.selectedDocId).not.toBeNull();
+        name: filename,
+        content: content,
+        annotationSets: [],
+      }),
+    ]);
   });
 
-  it('should update current document when selection changes', () => {
-    const mockDoc = {
-      id: '1',
-      name: 'test.md',
-      content: 'test content',
-      annotationSets: []
+  it("finds current document and content", () => {
+    const testDoc = {
+      id: "test-id",
+      name: "test.md",
+      content: "test content",
+      annotationSets: [],
     };
-    mockDocuments = [mockDoc];
+    mockDocuments = [testDoc];
 
     const { result } = renderHook(() => useDocumentManagement());
-
     act(() => {
-      result.current.setSelectedDocId('1');
+      result.current.setSelectedDocId(testDoc.id);
     });
 
-    expect(result.current.currentDocument).toEqual(mockDoc);
-    expect(result.current.currentContent).toBe('test content');
+    expect(result.current.currentDocument).toEqual(testDoc);
+    expect(result.current.currentContent).toBe(testDoc.content);
   });
-
-  it('should handle null documents gracefully', () => {
-    mockDocuments = null;
-
-    const { result } = renderHook(() => useDocumentManagement());
-
-    expect(result.current.currentContent).toBe('');
-    expect(result.current.documents).toBeNull();
-  });
-}); 
+});

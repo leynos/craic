@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 const { useRef } = React;
 
 interface DocumentUploadProps {
@@ -17,20 +17,14 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onFileUpload }) => {
     });
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const content = await readFileContent(file);
-      onFileUpload(content, file.name);
-      
-      // Reset the input so the same file can be uploaded again if needed
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type === "text/markdown" || file.type === "text/plain") {
+        const content = await readFileContent(file);
+        onFileUpload(content, file.name);
       }
-    } catch (error) {
-      console.error('Error reading file:', error);
     }
   };
 
@@ -38,47 +32,55 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ onFileUpload }) => {
     event.preventDefault();
   };
 
-  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files?.[0];
-    if (!file) return;
+  const handleDrop = async (e: React.DragEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-    try {
-      const content = await readFileContent(file);
-      onFileUpload(content, file.name);
-    } catch (error) {
-      console.error('Error reading file:', error);
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type === "text/markdown" || file.type === "text/plain") {
+        const content = await readFileContent(file);
+        onFileUpload(content, file.name);
+      }
     }
   };
 
   return (
-    <div 
+    <button
+      type="button"
       className="document-upload"
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-      style={{
-        border: '2px dashed #ccc',
-        borderRadius: '4px',
-        padding: '20px',
-        textAlign: 'center',
-        cursor: 'pointer',
-        marginBottom: '20px'
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
       }}
+      onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
+      aria-label="Upload document"
+      style={{
+        border: "2px dashed #ccc",
+        borderRadius: "4px",
+        padding: "20px",
+        textAlign: "center",
+        cursor: "pointer",
+        width: "100%",
+        marginBottom: "20px",
+        background: "none",
+      }}
     >
       <input
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
         accept=".md,.txt"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
       />
       <p>Click or drag a document here to upload</p>
-      <p style={{ fontSize: '0.8em', color: '#666' }}>
+      <p style={{ fontSize: "0.8em", color: "#666" }}>
         Supported formats: .md, .txt
       </p>
-    </div>
+    </button>
   );
 };
 
-export default DocumentUpload; 
+export default DocumentUpload;

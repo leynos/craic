@@ -1,79 +1,84 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import MarkdownAnnotator from '../MarkdownAnnotator';
+import { render, screen } from "@testing-library/react";
+import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Annotation } from "../../hooks/useDocumentManagement";
+import MarkdownAnnotator from "../MarkdownAnnotator";
 
-// Mock ReactMarkdown
-vi.mock('react-markdown', () => ({
-  default: ({ children }: { children: string }) => <div data-testid="markdown">{children}</div>
-}));
+interface RecogitoInstance {
+  on: (event: string, callback: (annotation: Annotation) => void) => void;
+  destroy: () => void;
+  setAnnotations: (annotations: Annotation[]) => void;
+}
 
-// Create a mock instance that we can control
-const mockDestroy = vi.fn();
 const mockSetAnnotations = vi.fn();
 const mockOn = vi.fn();
-let mockRecogitoInstance: any;
+const mockDestroy = vi.fn();
+let mockRecogitoInstance: RecogitoInstance;
+
+// Mock ReactMarkdown
+vi.mock("react-markdown", () => ({
+  default: ({ children }: { children: string }) => (
+    <div data-testid="markdown">{children}</div>
+  ),
+}));
 
 // Mock the Recogito class
-vi.mock('@recogito/recogito-js', () => ({
+vi.mock("@recogito/recogito-js", () => ({
   Recogito: vi.fn().mockImplementation(() => {
     mockRecogitoInstance = {
       destroy: mockDestroy,
       setAnnotations: mockSetAnnotations,
-      on: mockOn
+      on: mockOn,
     };
     return mockRecogitoInstance;
-  })
+  }),
 }));
 
 // Mock CSS import
-vi.mock('@recogito/recogito-js/dist/recogito.min.css', () => ({}));
+vi.mock("@recogito/recogito-js/dist/recogito.min.css", () => ({}));
 
-describe('MarkdownAnnotator', () => {
+describe("MarkdownAnnotator", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders markdown content', () => {
-    render(
-      <MarkdownAnnotator 
-        content="Test content" 
-        annotations={[]} 
-      />
-    );
-    expect(screen.getByTestId('markdown')).toHaveTextContent('Test content');
+  it("renders markdown content", () => {
+    render(<MarkdownAnnotator content="Test content" annotations={[]} />);
+    expect(screen.getByTestId("markdown")).toHaveTextContent("Test content");
   });
 
-  it('initializes Recogito with correct props', () => {
-    const annotations = [
+  it("initializes Recogito with correct props", () => {
+    const annotations: Annotation[] = [
       {
-        speaker: 'Test Speaker',
-        mark: ['0', '10']
-      }
+        id: "1",
+        text: "Test annotation",
+        start: 0,
+        end: 10,
+      },
     ];
 
     render(
-      <MarkdownAnnotator 
-        content="Test content" 
+      <MarkdownAnnotator
+        content="Test content"
         annotations={annotations}
         onAnnotationCreate={() => {}}
-      />
+      />,
     );
 
     // Check if Recogito was initialized
-    expect(mockSetAnnotations).toHaveBeenCalled();
-    expect(mockOn).toHaveBeenCalledWith('createAnnotation', expect.any(Function));
+    expect(mockSetAnnotations).toHaveBeenCalledWith(annotations);
+    expect(mockOn).toHaveBeenCalledWith(
+      "createAnnotation",
+      expect.any(Function),
+    );
   });
 
-  it('cleans up Recogito on unmount', () => {
+  it("cleans up Recogito on unmount", () => {
     const { unmount } = render(
-      <MarkdownAnnotator 
-        content="Test content" 
-        annotations={[]} 
-      />
+      <MarkdownAnnotator content="Test content" annotations={[]} />,
     );
 
     unmount();
     expect(mockDestroy).toHaveBeenCalled();
   });
-}); 
+});

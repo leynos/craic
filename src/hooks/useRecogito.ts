@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
-import { Recogito } from '@recogito/recogito-js';
-import '@recogito/recogito-js/dist/recogito.min.css';
+import { Recogito } from "@recogito/recogito-js";
+import React, { useRef, useState } from "react";
+import "@recogito/recogito-js/dist/recogito.min.css";
 
 export const useRecogito = () => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -39,4 +39,4 @@ export const useRecogito = () => {
     initializeRecogito,
     destroyRecogito,
   };
-}; 
+};

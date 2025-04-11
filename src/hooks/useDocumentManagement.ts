@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import useLocalStorageState from 'use-local-storage-state';
+import { useState } from "react";
+import useLocalStorageState from "use-local-storage-state";
 
 export interface Document {
   id: string;
@@ -11,24 +11,36 @@ export interface Document {
 export interface AnnotationSet {
   id: string;
   name: string;
-  annotations: any[];
+  annotations: Annotation[];
+}
+
+export interface Annotation {
+  id: string;
+  text: string;
+  start: number;
+  end: number;
 }
 
 export function useDocumentManagement() {
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
-  const [documents, setDocuments] = useLocalStorageState<Document[]>('documents', {
-    defaultValue: []
-  });
+  const [documents, setDocuments] = useLocalStorageState<Document[]>(
+    "documents",
+    {
+      defaultValue: [],
+    },
+  );
 
-  const currentDocument = documents?.find((doc: Document) => doc.id === selectedDocId);
-  const currentContent = currentDocument?.content || '';
+  const currentDocument = documents?.find(
+    (doc: Document) => doc.id === selectedDocId,
+  );
+  const currentContent = currentDocument?.content || "";
 
   const handleFileUpload = (content: string, filename: string) => {
     const newDoc: Document = {
       id: Date.now().toString(),
       name: filename,
       content: content,
-      annotationSets: []
+      annotationSets: [],
     };
     setDocuments([...(documents || []), newDoc]);
     setSelectedDocId(newDoc.id);
@@ -41,6 +53,6 @@ export function useDocumentManagement() {
     setSelectedDocId,
     currentDocument,
     currentContent,
-    handleFileUpload
+    handleFileUpload,
   };
-} 
+}
