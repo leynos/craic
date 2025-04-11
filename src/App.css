@@ -73,3 +73,31 @@ button.remove {
 button.remove:hover {
   background: #c82333;
 }
+
+button.selected {
+  background: #28a745;
+}
+
+button.selected:hover {
+  background: #218838;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+li button {
+  flex: 1;
+}
+
+li button.remove {
+  flex: 0;
+}

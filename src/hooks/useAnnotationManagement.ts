@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import useLocalStorageState from 'use-local-storage-state';
 import { Document, AnnotationSet } from './useDocumentManagement';
 
 export function useAnnotationManagement(
@@ -7,7 +8,9 @@ export function useAnnotationManagement(
   setDocuments: (value: Document[]) => void
 ) {
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
-  const [annotationSets, setAnnotationSets] = useState<AnnotationSet[]>([]);
+  const [annotationSets, setAnnotationSets] = useLocalStorageState<AnnotationSet[]>('annotationSets', {
+    defaultValue: []
+  });
 
   const currentAnnotations = documents?.find(doc => doc.id === selectedDocId)
     ?.annotationSets.find(set => set.id === selectedSetId)
@@ -27,7 +30,7 @@ export function useAnnotationManagement(
         ? { ...doc, annotationSets: [...doc.annotationSets, newSet] }
         : doc
     ));
-    setAnnotationSets(prev => [...prev, newSet]);
+    setAnnotationSets([...(annotationSets || []), newSet]);
     setSelectedSetId(newSet.id);
   };
 
@@ -39,7 +42,7 @@ export function useAnnotationManagement(
         ? { ...doc, annotationSets: doc.annotationSets.filter(set => set.id !== id) }
         : doc
     ));
-    setAnnotationSets(prev => prev.filter(set => set.id !== id));
+    setAnnotationSets((annotationSets || []).filter(set => set.id !== id));
     if (selectedSetId === id) {
       setSelectedSetId(null);
     }

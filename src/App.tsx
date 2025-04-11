@@ -1,4 +1,4 @@
-import DocumentMenu from './components/DocumentMenu';
+import React, { useState } from 'react';
 import DocumentUpload from './components/DocumentUpload';
 import MarkdownAnnotator from './components/MarkdownAnnotator';
 import { useDocumentManagement } from './hooks/useDocumentManagement';
@@ -6,65 +6,58 @@ import { useAnnotationManagement } from './hooks/useAnnotationManagement';
 import './App.css';
 
 function App() {
-  const {
-    documents,
-    setDocuments,
-    selectedDocId,
-    setSelectedDocId,
-    currentContent,
-    handleFileUpload
-  } = useDocumentManagement();
+  const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
+  const { documents, setDocuments, handleFileUpload } = useDocumentManagement();
+  const { annotationSets, handleAddAnnotationSet, handleRemoveAnnotationSet, handleAnnotationCreate } = useAnnotationManagement(documents, selectedDocId, setDocuments);
 
-  const {
-    annotationSets,
-    selectedSetId,
-    setSelectedSetId,
-    currentAnnotations,
-    handleAddAnnotationSet,
-    handleRemoveAnnotationSet,
-    handleAnnotationCreate
-  } = useAnnotationManagement(documents, selectedDocId, setDocuments);
+  const onFileUpload = (content: string, filename: string) => {
+    handleFileUpload(content, filename);
+  };
+
+  const selectedDoc = documents?.find(doc => doc.id === selectedDocId);
 
   return (
     <div className="app-container">
       <div className="sidebar">
         <h2>Documents</h2>
-        <DocumentUpload onFileUpload={handleFileUpload} />
-        <select 
-          value={selectedDocId || ''} 
-          onChange={(e) => setSelectedDocId(e.target.value || null)}
-          style={{ width: '100%', marginBottom: '20px' }}
-        >
-          <option value="">Select a document</option>
+        <DocumentUpload onFileUpload={onFileUpload} />
+        <ul>
           {documents?.map(doc => (
-            <option key={doc.id} value={doc.id}>{doc.name}</option>
+            <li key={doc.id}>
+              <button
+                onClick={() => setSelectedDocId(doc.id)}
+                className={selectedDocId === doc.id ? 'selected' : ''}
+              >
+                {doc.name}
+              </button>
+              <button 
+                className="remove"
+                onClick={() => {
+                  const newDocs = documents.filter(d => d.id !== doc.id);
+                  setDocuments(newDocs);
+                  if (selectedDocId === doc.id) {
+                    setSelectedDocId(null);
+                  }
+                }}
+              >
+                Remove
+              </button>
+            </li>
           ))}
-        </select>
-
-        {selectedDocId && (
-          <>
-            <h2>Annotation Sets</h2>
-            <DocumentMenu 
-              annotationSets={annotationSets}
-              selectedSetId={selectedSetId}
-              onAddSet={handleAddAnnotationSet}
-              onRemoveSet={handleRemoveAnnotationSet}
-              onSelectSet={setSelectedSetId}
-            />
-          </>
-        )}
+        </ul>
       </div>
-      
       <div className="main-content">
-        {currentContent ? (
-          <MarkdownAnnotator
-            content={currentContent}
-            annotations={currentAnnotations}
-            onAnnotationCreate={handleAnnotationCreate}
-          />
+        {selectedDoc ? (
+          <div className="markdown-content">
+            <MarkdownAnnotator
+              content={selectedDoc.content}
+              annotations={annotationSets?.flatMap(set => set.annotations) || []}
+              onAnnotationCreate={handleAnnotationCreate}
+            />
+          </div>
         ) : (
           <div className="empty-state">
-            <p>Upload or select a document to begin annotating</p>
+            <p>Select a document to view</p>
           </div>
         )}
       </div>

@@ -1,22 +1,23 @@
 /// <reference types="@types/jest" />
 import { renderHook, act } from '@testing-library/react';
 import { useDocumentManagement } from '../useDocumentManagement';
-import { useLocalStorage } from 'react-storage-complete';
+import useLocalStorageState from 'use-local-storage-state';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock react-storage-complete
-const mockUseLocalStorage = vi.fn();
-vi.mock('react-storage-complete', () => ({
-  useLocalStorage: () => mockUseLocalStorage()
+// Mock use-local-storage-state
+const mockSetDocuments = vi.fn();
+let mockDocuments: any[] | null = [];
+
+vi.mock('use-local-storage-state', () => ({
+  default: vi.fn().mockImplementation(() => {
+    return [mockDocuments, mockSetDocuments, { isPersistent: true, removeItem: () => {} }];
+  })
 }));
 
 describe('useDocumentManagement', () => {
-  const mockSetDocuments = vi.fn();
-  const mockDocuments: any[] = [];
-
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseLocalStorage.mockReturnValue([mockDocuments, mockSetDocuments]);
+    mockDocuments = [];
   });
 
   it('should initialize with empty documents and no selected document', () => {
@@ -34,13 +35,13 @@ describe('useDocumentManagement', () => {
       result.current.handleFileUpload('test content', 'test.md');
     });
 
-    expect(mockSetDocuments).toHaveBeenCalledWith([
+    expect(mockSetDocuments).toHaveBeenCalledWith(expect.arrayContaining([
       expect.objectContaining({
         name: 'test.md',
         content: 'test content',
         annotationSets: []
       })
-    ]);
+    ]));
     expect(result.current.selectedDocId).not.toBeNull();
   });
 
@@ -51,8 +52,7 @@ describe('useDocumentManagement', () => {
       content: 'test content',
       annotationSets: []
     };
-
-    mockUseLocalStorage.mockReturnValue([[mockDoc], mockSetDocuments]);
+    mockDocuments = [mockDoc];
 
     const { result } = renderHook(() => useDocumentManagement());
 
@@ -65,7 +65,7 @@ describe('useDocumentManagement', () => {
   });
 
   it('should handle null documents gracefully', () => {
-    mockUseLocalStorage.mockReturnValue([null, mockSetDocuments]);
+    mockDocuments = null;
 
     const { result } = renderHook(() => useDocumentManagement());
 

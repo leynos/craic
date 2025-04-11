@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocalStorage } from 'react-storage-complete';
+import useLocalStorageState from 'use-local-storage-state';
 
 export interface Document {
   id: string;
@@ -16,9 +16,11 @@ export interface AnnotationSet {
 
 export function useDocumentManagement() {
   const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
-  const [documents, setDocuments] = useLocalStorage<Document[]>('documents', []);
+  const [documents, setDocuments] = useLocalStorageState<Document[]>('documents', {
+    defaultValue: []
+  });
 
-  const currentDocument = documents?.find(doc => doc.id === selectedDocId);
+  const currentDocument = documents?.find((doc: Document) => doc.id === selectedDocId);
   const currentContent = currentDocument?.content || '';
 
   const handleFileUpload = (content: string, filename: string) => {
