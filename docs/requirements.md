@@ -42,6 +42,7 @@ This document outlines the functional and technical requirements identified duri
 ## 3. Technical & Testing Requirements
 
 *   **State Management:** Implement robust state management for documents and annotations (e.g., using React hooks, potentially `use-local-storage-state` for persistence).
+*   **Styling:** Utilize Tailwind CSS (v4) for utility-first styling to ensure consistency and rapid UI development.
 *   **Testing Environment:**
     *   Configure a testing environment (using `vitest` and `jsdom`) capable of testing React components that interact with the DOM.
     *   Ensure tests accurately reflect component behavior and accessibility requirements.
