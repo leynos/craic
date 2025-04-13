@@ -17,7 +17,7 @@ This document outlines the key libraries and tools chosen for this project and t
 ## Testing
 
 *   **Vitest (`vitest`):**
-    *   **Rationale:** Fast and modern test runner designed to work seamlessly with Vite. Offers a Jest-compatible API, making it familiar to many developers, while benefiting from Vite's speed and architecture.
+    *   **Rationale:** Fast and modern test runner designed to work seamlessly with Vite. Offers a Jest-compatible API. While Vitest is the engine, tests will primarily be executed via the `bun test` command, which integrates with Vitest.
 *   **React Testing Library (`@testing-library/react`, `@testing-library/jest-dom`):**
     *   **Rationale:** Provides utilities for testing React components in a way that resembles how users interact with them. Encourages writing tests that focus on user behavior and accessibility rather than implementation details. `@testing-library/jest-dom` adds helpful custom matchers for DOM assertions.
 *   **JSDOM (`jsdom`):**
@@ -26,6 +26,7 @@ This document outlines the key libraries and tools chosen for this project and t
 ## Annotation Functionality
 
 *   **RecogitoJS (`@recogito/recogito-js`):**
+    *   **Version:** `^1.8.4`
     *   **Rationale:** A specialized JavaScript library specifically designed for text annotation tasks. Chosen for its focus on annotation features, providing the core functionality needed for selecting text and associating metadata (annotations) with it.
 
 ## State Management
@@ -43,4 +44,4 @@ This document outlines the key libraries and tools chosen for this project and t
 ## Package Management & Script Running
 
 *   **Bun:**
-    *   **Rationale:** A fast, all-in-one JavaScript runtime, bundler, test runner, and package manager.
+    *   **Rationale:** A fast, all-in-one JavaScript runtime, bundler, test runner, and package manager. Used for package management (`bun install`), running development server (`bun run dev`), building (`bun run build`), and executing tests (`bun test`).
