@@ -1,15 +1,13 @@
 // src/components/document-upload/DocumentUpload.tsx
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
-// Import the type, but not the function directly
-import type { readFileAsText as ReadFileAsTextFn } from '../../lib/file-reader';
 // Import the function for default usage
 import { readFileAsText as defaultReadFileAsText } from '../../lib/file-reader';
 
 interface DocumentUploadProps {
 	addDocument: (name: string, content: string) => void;
 	// Prop for injecting the utility function during tests
-	_testReadFileAsText?: typeof defaultReadFileAsText;
+	fileReader?: typeof defaultReadFileAsText;
 }
 
 const ACCEPTED_FILE_TYPES = '.md,.txt';
@@ -17,13 +15,13 @@ const ACCEPTED_MIME_TYPES = ['text/markdown', 'text/plain'];
 
 export function DocumentUpload({
 	addDocument,
-	_testReadFileAsText,
+	fileReader,
 }: DocumentUploadProps) {
 	const [error, setError] = useState<string | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	// Use injected function or default import
-	const readFileToUse = _testReadFileAsText ?? defaultReadFileAsText;
+	const readFileToUse = fileReader ?? defaultReadFileAsText;
 
 	const handleFileChange = useCallback(
 		async (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,8 +1,11 @@
 /// <reference types="vitest/globals" />
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, it, expect, mock } from 'bun:test';
-import { DocumentUpload } from '../DocumentUpload';
+import { describe, it, expect, mock, afterEach } from 'bun:test';
+import { cleanup } from '@testing-library/react';
+import { DocumentUpload } from '../DocumentUpload.tsx';
 // Removed import of readFileAsText
+
+afterEach(cleanup);
 
 describe('DocumentUpload', () => {
 	it('should render upload area and supported formats', () => {
@@ -22,7 +25,7 @@ describe('DocumentUpload', () => {
 
 	// Skip tests involving file change + mock due to bun test/happy-dom issue
 	// causing multiple renders and failing queries.
-	it.skip('should call addDocument with file content on valid file selection', async () => {
+	it('should call addDocument with file content on valid file selection', async () => {
 		const mockAddDocument = mock(() => {});
 		const fileContent = '# Markdown Content';
 		const file = new File([fileContent], 'test.md', { type: 'text/markdown' });
@@ -36,7 +39,7 @@ describe('DocumentUpload', () => {
 		render(
 			<DocumentUpload
 				addDocument={mockAddDocument}
-				_testReadFileAsText={mockReadFileUtil}
+				fileReader={mockReadFileUtil}
 			/>
 		);
 
@@ -57,7 +60,7 @@ describe('DocumentUpload', () => {
 		expect(mockAddDocument).toHaveBeenCalledWith('test.md', fileContent);
 	});
 
-	it.skip('should show error if file reading fails', async () => {
+	it('should show error if file reading fails', async () => {
 		const mockAddDocument = mock(() => {});
 		const file = new File(['content'], 'test.txt', { type: 'text/plain' });
 		const error = new Error('Read failed!');
@@ -71,7 +74,7 @@ describe('DocumentUpload', () => {
 		render(
 			<DocumentUpload
 				addDocument={mockAddDocument}
-				_testReadFileAsText={mockReadFileUtil}
+				fileReader={mockReadFileUtil}
 			/>
 		);
 		const input = screen.getByTestId('document-upload-input');
@@ -89,7 +92,7 @@ describe('DocumentUpload', () => {
 		expect(mockAddDocument).not.toHaveBeenCalled();
 	});
 
-	it.skip('should not call addDocument for unsupported file types', async () => {
+	it('should not call addDocument for unsupported file types', async () => {
 		const mockAddDocument = mock(() => {});
 		// Create a mock utility function (although it shouldn't be called)
 		const mockReadFileUtil = mock(async (_f: File): Promise<string> => "");
@@ -97,7 +100,7 @@ describe('DocumentUpload', () => {
 		render(
 			<DocumentUpload
 				addDocument={mockAddDocument}
-				_testReadFileAsText={mockReadFileUtil} // Inject it
+				fileReader={mockReadFileUtil} // Inject it
 			/>
 		);
 
