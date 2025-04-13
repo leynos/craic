@@ -62,3 +62,107 @@ When implementing changes, adhere to the following testing procedures:
     *   Perform the refactoring as a **separate, atomic commit** *after* the functional change commit.
     *   Ensure the refactoring adheres to the testing guidelines (behavioral tests pass before and after, unit tests added for new units).
     *   Ensure the refactoring commit itself passes all quality gates.
+
+## TypeScript Code Style Guidelines
+
+### Code Style and Structure
+
+- **Code is for humans.** Write your code as though the next person to read it is an exhausted teammate at 3 a.m.—because one day, it will be.
+- **Explain *why*, not *what*.** Use comments to describe rationale, trade-offs, and limitations. Avoid restating what the code already expresses. If necessary, explain *why not*.
+- **Be concise, but not cryptic.** Strive for clarity over cleverness. Write maintainable, technically accurate TypeScript with inline documentation and usage examples where helpful.
+- **Prefer composition and iteration.** Avoid duplication by modularising reusable logic and favouring `map`, `reduce`, or `for` loops over repeated structures.
+- **Use expressive variable and function names.** Prefer names with auxiliary verbs or meaningful prefixes/suffixes (`isLoading`, `hasPermission`, `onSubmit`).
+- **Organise code logically within files.** Group exports with related concerns (e.g., component + helpers + types). Each file should represent a single concept or cohesive module.
+- **Group by feature, not type.** Prefer colocating components, styles, and logic that relate to a feature over centralising all components, all styles, etc.
+
+### Naming Conventions
+
+- **Directories:** Use *kebab-case* (e.g., `auth-wizard`, `user-profile`).
+- **Files:** Use *kebab-case* for filenames; name files after what they export.
+- **Components:** Use *PascalCase* for React component names.
+- **Variables & Functions:** Use *camelCase* for all variables, functions, and non-component exports.
+- **Export Style:** Prefer *named exports*. Use default exports only where the file exports a single primary item (e.g., a page component).
+- **Constants:** Use *UPPER_SNAKE_CASE* for exported constants.
+- **Types & Interfaces:** Use *PascalCase*.
+
+### TypeScript Usage
+
+- **Use TypeScript everywhere.** Avoid `.js` files unless there's a compelling reason.
+- **Prefer `interface` over `type`** unless union or mapped types are required. Interfaces support declaration merging and are better suited for extending.
+- **Always type props and state.** Don’t rely on implicit types for exported components.
+- **Avoid `any`.** Use unknown, generics, or type assertions if necessary, but always justify use of `any`.
+- **Use enums or constants instead of magic values.** Particularly for states, error codes, routes, and other domain concepts.
+
+### React Best Practices
+
+- **Use functional components.** Avoid class components.
+- **Prefer hooks over HOCs.** Encapsulate logic with custom hooks (`useXyz`) instead of creating reusable HOCs.
+- **Type hooks correctly.** For example, `useState<string | null>` is better than `useState()` and inferring.
+- **Memoize expensive computations.** Use `useMemo` and `useCallback` responsibly.
+
+### Tooling and Build
+
+- **Vite Optimisation:** Implement chunking and code splitting where appropriate, especially for large dependencies or routes.
+- **Avoid global side effects.** Modules should not mutate global state on import.
+- **Use environment variables safely.** Never expose secrets; prefix with `VITE_` for public env vars.
+- **Static assets and constants** should be imported from a single source-of-truth module or colocated with the feature they serve.
+
+### Documentation
+
+- **Document complex types and functions.** Use TSDoc-style comments for exported APIs or utilities.
+- **Colocate examples with source.** If a component or function has non-obvious behaviour, provide minimal usage examples in comments or markdown files.
+
+### Test Organisation
+
+- **Colocate tests with source files** in a test sub-directory, using the `.test.ts` or `.test.tsx` suffix. This keeps tests near the code they verify, easing discoverability and maintenance.
+  
+    ```
+    components/
+      auth-wizard/
+        tests/
+          AuthWizard.test.tsx
+          helpers.test.ts
+        AuthWizard.tsx
+        helpers.ts
+    ```
+
+- **Keep test files small and focused.** If a test grows too large or mixes concerns, break it up by moving more complex integration tests into a dedicated directory such as:
+
+    ```
+    tests/
+      integration/
+        AuthFlow.test.ts
+        PaymentGateway.test.ts
+    ```
+
+- **Use `describe()` blocks** to group tests by logical unit or behaviour. Test names should express intent, not implementation.
+  
+    ```ts
+    describe('AuthWizard', () => {
+      it('renders the first step by default', () => {
+        // ...
+      });
+  
+      it('validates input before progressing', () => {
+        // ...
+      });
+    });
+    ```
+
+- **Avoid over-mocking.** Prefer testing components and logic with as few mocks as possible—mocking should only replace APIs, browser APIs, or intentionally externalised dependencies.
+
+- **Prefer real user behaviour over internal component state.** The more your tests resemble the way your software is used, the more confidence they can give you.
+
+- **Use parameterized tests to run a single test case with different inputs and expected outputs.** This reduces code duplication and ensures that your functions behave correctly for various scenarios.
+
+    ```ts
+    describe.each([
+      [1, 2, 3],
+      [2, 3, 5],
+      [5, 5, 10],
+    ])('Math Operations', (a, b, expected) => {
+      it(`should add ${a} and ${b} to equal ${expected}`, () => {
+        expect(a + b).toBe(expected);
+      });
+    });
+    ```
