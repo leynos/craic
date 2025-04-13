@@ -75,8 +75,9 @@ export function DocumentUpload({
 				type="file"
 				accept={ACCEPTED_FILE_TYPES}
 				onChange={handleFileChange}
+				role="button"
 				className="hidden"
-				data-testid="document-upload-input"
+				aria-label="Upload Document"
 			/>
 			<p className="mt-2 text-gray-500 text-sm">
 				Supported formats: {ACCEPTED_FILE_TYPES}

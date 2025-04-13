@@ -14,7 +14,7 @@ describe('DocumentUpload', () => {
 
 		const label = screen.getByText(/Upload Document/i);
 		expect(label).toBeInTheDocument();
-		const input = screen.getByTestId('document-upload-input');
+		const input = screen.getByRole('button', { name: /Upload Document/i });
 		expect(input).toBeInTheDocument();
 		expect(input).toHaveAttribute('type', 'file');
 		expect(input).toHaveAttribute('accept', '.md,.txt');
@@ -43,7 +43,7 @@ describe('DocumentUpload', () => {
 			/>
 		);
 
-		const input = screen.getByTestId('document-upload-input');
+		const input = screen.getByRole('button', { name: /Upload Document/i });
 
 		// Simulate file selection
 		await act(async () => {
@@ -77,7 +77,7 @@ describe('DocumentUpload', () => {
 				fileReader={mockReadFileUtil}
 			/>
 		);
-		const input = screen.getByTestId('document-upload-input');
+		const input = screen.getByRole('button', { name: /Upload Document/i });
 
 		await act(async () => {
 			fireEvent.change(input, { target: { files: [file] } });
@@ -104,7 +104,7 @@ describe('DocumentUpload', () => {
 			/>
 		);
 
-		const input = screen.getByTestId('document-upload-input');
+		const input = screen.getByRole('button', { name: /Upload Document/i });
 		const file = new File(['binary'], 'test.jpg', { type: 'image/jpeg' });
 
 		await act(async () => {
