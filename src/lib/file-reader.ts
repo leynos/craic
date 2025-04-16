@@ -15,7 +15,7 @@ export function readFileAsText(file: File): Promise<string> {
 			}
 		};
 
-		reader.onerror = (event) => {
+		reader.onerror = () => {
 			reject(reader.error ?? new Error('Unknown error reading file.'));
 		};
 
