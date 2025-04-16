@@ -31,11 +31,11 @@ This document outlines the key architectural patterns and design decisions made 
 
 ## 5. Testing Strategy
 
-*   **Component Testing Focus:** Testing efforts primarily target individual components using `vitest` and `React Testing Library`.
+*   **Component Testing Focus:** Testing efforts primarily target individual components using `bun test` and `React Testing Library`.
 *   **User-Centric Queries:** Tests prioritize querying the DOM using methods that simulate user interaction and rely on accessibility attributes (`getByRole`, `getByLabelText`, `getByText`) where possible.
-*   **DOM Simulation:** Tests run in a simulated DOM environment (`jsdom`) configured via `vitest.config.ts` to allow rendering and interaction testing outside a real browser.
+*   **DOM Simulation:** Tests run in a simulated DOM environment (`happy-dom`) to allow rendering and interaction testing outside a real browser.
 *   **Mocking:** Dependencies or browser APIs (like `FileReader`) are mocked as needed within the test setup (`src/test/setup.ts`).
-*   **Test Execution:** `vitest run` (executed via `npm test` or `bun run test`) is the designated command for running the test suite.
+*   **Test Execution:** `bun test` is the designated command for running the test suite.
 
 ## 6. Accessibility
 
