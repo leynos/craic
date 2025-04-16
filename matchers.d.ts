@@ -2,11 +2,14 @@
 // This file extends Bun's native `expect` matchers with
 // the custom matchers provided by @testing-library/jest-dom.
 
-import type { TestingLibraryMatchers } from '@testing-library/jest-dom/matchers';
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 // Import Bun's native Matchers type
-import type { Matchers as BunMatchers, AsymmetricMatchers as BunAsymmetricMatchers } from 'bun:test';
+import type {
+  Matchers as BunMatchers,
+  AsymmetricMatchers as BunAsymmetricMatchers,
+} from "bun:test";
 
-declare module 'bun:test' {
+declare module "bun:test" {
   // Extend Bun's native Matchers interface
   // Ensure the type parameter T matches the original BunMatchers signature.
   // TestingLibraryMatchers expects <MatcherResult, T>
@@ -16,8 +19,9 @@ declare module 'bun:test' {
 
   // Extend Bun's native AsymmetricMatchers interface
   // Use `unknown` here as well for simplicity, assuming asymmetric matchers don't rely heavily on the specific MatcherResult type.
-  interface AsymmetricMatchers extends TestingLibraryMatchers<unknown, unknown> {}
+  interface AsymmetricMatchers
+    extends TestingLibraryMatchers<unknown, unknown> {}
 }
 
 // Ensure this file is included in your tsconfig.json's "include" array or
-// discovered by default (e.g., by being in the root or src directory). 
+// discovered by default (e.g., by being in the root or src directory).

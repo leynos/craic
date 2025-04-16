@@ -18,7 +18,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": true
 
     /* Aliases - Optional, add if needed later */
     // "baseUrl": ".",
@@ -28,4 +28,4 @@
   },
   "include": ["src", "matchers.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
-} 
+}

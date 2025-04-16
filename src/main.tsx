@@ -4,8 +4,10 @@ import ReactDOM from "react-dom/client";
 import App from "./components/App";
 import "./styles.css";
 
-ReactDOM.createRoot(document.getElementById("root") ?? document.createElement("div")).render(
+ReactDOM.createRoot(
+  document.getElementById("root") ?? document.createElement("div"),
+).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

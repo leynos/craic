@@ -6,4 +6,4 @@ export default function App() {
       <h1 className="font-display text-4xl">Craic</h1>
     </div>
   );
-} 
+}

@@ -1,2 +1,3 @@
 [test]
-preload = "./src/test/happy-dom-setup.ts"
+# Preload Happy DOM first
+preload = ["./src/test/happy-dom-setup.ts"]
