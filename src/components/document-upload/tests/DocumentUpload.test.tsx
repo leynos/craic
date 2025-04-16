@@ -95,7 +95,7 @@ describe('DocumentUpload Component', () => {
 		// We need to manually dispatch events.
 		// Bun/HappyDOM support for DataTransfer might have limitations.
 
-		const user = userEvent.setup(); // Though not directly used for drop simulation here
+		userEvent.setup(); // Though not directly used for drop simulation here
 		const handleUpload = mock((content: string, fileName: string) => {
 			expect(content).toBe('Plain text content.');
 			expect(fileName).toBe('document.txt');
