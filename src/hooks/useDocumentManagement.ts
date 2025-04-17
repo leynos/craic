@@ -2,13 +2,15 @@ import { useCallback, useState } from "react";
 import useLocalStorageState from "use-local-storage-state";
 import type { Document } from "../types";
 
+const DEFAULT_DOCUMENTS_KEY = "documents";
+
 // Simple unique ID generator (replace with more robust solution if needed)
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substring(2);
 
-export function useDocumentManagement() {
+export function useDocumentManagement(storageKey: string = DEFAULT_DOCUMENTS_KEY) {
   const [documents, setDocuments] = useLocalStorageState<Document[]>(
-    "documents",
+    storageKey,
     {
       defaultValue: [],
     },

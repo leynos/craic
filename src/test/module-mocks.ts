@@ -1,50 +1,68 @@
 // src/test/module-mocks.ts
 import { mock } from "bun:test";
-import { useState } from "react";
+import { useState, useCallback, useEffect } from 'react';
 
-// Export the store and a reset function
-export let memoryStore: Record<string, unknown> = {}; // Use let and export
+// Simple in-memory store for use-local-storage-state mock
+const localStorageState: Record<string, unknown> = {};
 
 export const resetLocalStorageMock = () => {
-  memoryStore = {}; // Reset the exported store
+    // Clear all stored values on the existing store object so closures see the cleared state
+    for (const key of Object.keys(localStorageState)) {
+        localStorageState[key] = undefined;
+    }
 };
 
-// Mock useLocalStorageState using bun's mock.module
-mock.module("use-local-storage-state", () => {
-  // Use the exported, resettable memoryStore
-  const mockUseLocalStorageState = <T>(
-    key: string,
-    options: { defaultValue: T },
-  ): [T, (newValue: T | ((prevState: T) => T)) => void] => {
-    // Read from the module-level memoryStore
-    const initialValue =
-      key in memoryStore ? (memoryStore[key] as T) : options.defaultValue;
-    const [value, setValue] = useState<T>(initialValue);
+// Mock implementation of useLocalStorageState
+const mockUseLocalStorageState = <T>(key: string, options?: { defaultValue?: T }): [T | undefined, (newState: T | ((prevState: T | undefined) => T)) => void] => {
+    // Initialize state: try reading from mock store (asserting type), fallback to defaultValue
+    const [state, setState] = useState<T | undefined>(() => {
+        const storedValue = localStorageState[key];
+        return storedValue !== undefined ? (storedValue as T) : options?.defaultValue;
+    });
 
-    const updateValue = (newValue: T | ((prevState: T) => T)) => {
-      // Determine the current value reliably from the shared store
-      const currentValue =
-        key in memoryStore ? (memoryStore[key] as T) : options.defaultValue;
+    const updateState = useCallback((newState: T | ((prevState: T | undefined) => T)) => {
+        // When updating, get the current state from the *mock store* and assert type
+        const currentStoredValue = localStorageState[key] as T | undefined;
+        const valueToStore = typeof newState === 'function'
+            ? (newState as (prevState: T | undefined) => T)(currentStoredValue)
+            : newState;
+        localStorageState[key] = valueToStore;
+        setState(valueToStore);
+    }, [key]);
 
-      const resolvedValue =
-        typeof newValue === "function"
-          ? // Execute the updater function with the CURRENT value from the shared store
-            (newValue as (prevState: T) => T)(currentValue)
-          : newValue;
-      // Write the NEW value back to the store
-      memoryStore[key] = resolvedValue;
-      // Update the internal useState as well, so subsequent reads within the same hook instance get the latest value
-      setValue(resolvedValue);
-    };
+    // Effect to sync state if mock store was updated externally (less common in simple tests)
+    useEffect(() => {
+        if (localStorageState[key] !== undefined && state === undefined) {
+            setState(localStorageState[key] as T);
+        }
+    }, [key, state]);
 
-    return [value, updateValue];
-  };
+    return [state, updateState];
+};
 
-  // The factory function for mock.module returns the exports object
-  return {
+// Apply the mock
+mock.module('use-local-storage-state', () => ({
     __esModule: true,
     default: mockUseLocalStorageState,
-  };
-});
+}));
 
-// Add other module mocks here if needed later
+// Mock for FileReader (if needed elsewhere, keep it simple)
+// // ... existing FileReader mock if present ...
+
+// Example: Simple FileReader mock if needed
+// export const mockFileReader = {
+//     readAsText: mock((file) => {
+//         // Simulate async read completion
+//         setTimeout(() => {
+//             const mockEvent = { target: { result: file.content || 'mock content' } };
+//             if (typeof mockFileReader.onload === 'function') {
+//                 mockFileReader.onload(mockEvent);
+//             }
+//         }, 0);
+//     }),
+//     onload: null as ((event: any) => void) | null,
+//     onerror: null as (() => void) | null,
+// };
+
+// // @ts-ignore
+// global.FileReader = mock(() => mockFileReader);

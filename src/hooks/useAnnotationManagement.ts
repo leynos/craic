@@ -16,18 +16,22 @@ interface UseAnnotationManagementReturn {
   selectAnnotationSet: (setId: string | null) => void;
 }
 
+// Add default storage key constant
+const DEFAULT_ANNOTATION_SETS_KEY = "annotationSets";
+
 /**
  * Hook to manage annotation sets for a specific document.
  * @param documentId The ID of the currently selected document, or null if none selected.
  */
 export function useAnnotationManagement(
   documentId: string | null,
+  storageKey: string = DEFAULT_ANNOTATION_SETS_KEY,
 ): UseAnnotationManagementReturn {
   // Add explicit return type here
   // Store all annotation sets globally
   const [allAnnotationSets, setAllAnnotationSets] = useLocalStorageState<
     AnnotationSet[]
-  >("annotationSets", {
+  >(storageKey, {
     defaultValue: [],
   });
 
