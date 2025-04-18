@@ -30,8 +30,8 @@ export function useDocumentManagement(storageKey: string = DEFAULT_DOCUMENTS_KEY
         ...(prevDocs ?? []),
         newDocument,
       ]);
-      // Optionally select the new document immediately
-      // setSelectedDocumentId(newDocument.id);
+      // Auto-select the new document
+      setSelectedDocumentId(newDocument.id);
     },
     [setDocuments],
   );

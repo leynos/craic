@@ -44,9 +44,10 @@ import DocumentUpload from "../DocumentUpload";
 // Replace MockDocumentUpload with the real one once created - REMOVED
 // const DocumentUpload = MockDocumentUpload;
 
+// Clean up the DOM after each test
+afterEach(cleanup);
+
 describe("DocumentUpload Component", () => {
-  // Clean up the DOM after each test
-  afterEach(cleanup);
 
   test("should render the upload area and display supported formats", () => {
     const handleUpload = mock(() => {});
@@ -84,11 +85,11 @@ describe("DocumentUpload Component", () => {
 
   // NOTE: Using fireEvent.change instead of userEvent.upload due to
   // RangeError: Maximum call stack size exceeded in Bun/HappyDOM env.
-  test("should call onUpload with file content and name when a file is selected via click", async () => {
+  test("should call onUpload with file name and content when a file is selected via click", async () => {
     const user = userEvent.setup();
-    const handleUpload = mock((content: string, fileName: string) => {
-      expect(content).toBe("## Test Markdown Content");
+    const handleUpload = mock((fileName: string, content: string) => {
       expect(fileName).toBe("test.md");
+      expect(content).toBe("## Test Markdown Content");
     });
 
     const { container } = render(<DocumentUpload onUpload={handleUpload} />);

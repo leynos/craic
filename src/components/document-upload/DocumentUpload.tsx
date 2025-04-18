@@ -5,9 +5,9 @@ import type { DragEvent, ChangeEvent } from "react";
 interface DocumentUploadProps {
   /**
    * Callback function triggered when a valid document is uploaded.
-   * Receives the file content as a string and the file name.
+   * Receives the file name first and then the file content.
    */
-  onUpload: (content: string, fileName: string) => void;
+  onUpload: (fileName: string, content: string) => void;
 }
 
 const ALLOWED_MIME_TYPES = ["text/plain", "text/markdown"];
@@ -46,7 +46,7 @@ function DocumentUpload({ onUpload }: DocumentUploadProps) {
       reader.onload = (loadEvent) => {
         const content = loadEvent.target?.result;
         if (typeof content === "string") {
-          onUpload(content, file.name);
+          onUpload(file.name, content);
         } else {
           setError("Could not read file content.");
         }
