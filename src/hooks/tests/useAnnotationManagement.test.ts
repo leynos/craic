@@ -1,8 +1,8 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
-import { describe, it, expect, beforeEach } from "bun:test";
-import { useAnnotationManagement } from "../useAnnotationManagement";
-import type { AnnotationSet } from "../../types";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { resetLocalStorageMock } from "../../test/module-mocks";
+import type { AnnotationSet } from "../../types";
+import { useAnnotationManagement } from "../useAnnotationManagement";
 
 // Ensure the mock module is evaluated by importing it
 import "../../test/module-mocks";
@@ -43,19 +43,19 @@ describe("useAnnotationManagement", () => {
     // Wait for state update
     let set: AnnotationSet | undefined;
     await waitFor(() => {
-        expect(result.current.annotationSets).toHaveLength(1);
-        set = result.current.annotationSets[0] as AnnotationSet;
-        expect(set).toBeDefined();
-        expect(result.current.selectedSetId).toBe(set.id);
+      expect(result.current.annotationSets).toHaveLength(1);
+      set = result.current.annotationSets[0] as AnnotationSet;
+      expect(set).toBeDefined();
+      expect(result.current.selectedSetId).toBe(set.id);
     });
 
     expect(set?.name).toBe("Set 1");
     expect(set?.documentId).toBe("doc1");
     expect(set?.id).toBeDefined();
     if (set) {
-        expect(result.current.selectedAnnotationSet).toEqual(set);
+      expect(result.current.selectedAnnotationSet).toEqual(set);
     } else {
-        throw new Error("Set should be defined after waitFor");
+      throw new Error("Set should be defined after waitFor");
     }
   });
 
@@ -72,7 +72,7 @@ describe("useAnnotationManagement", () => {
 
   it("should only return sets for the current document", async () => {
     const key = getUniqueKey("annotationSets");
-    const { result: resultDoc1, rerender: rerenderDoc1 } = renderHook(
+    const { result: resultDoc1 } = renderHook(
       ({ docId }) => useAnnotationManagement(docId, key),
       { initialProps: { docId: "doc1" } },
     );
@@ -90,9 +90,9 @@ describe("useAnnotationManagement", () => {
 
     // Check sets for doc1 after waiting for updates
     await waitFor(() => {
-        expect(resultDoc1.current.annotationSets).toHaveLength(2);
+      expect(resultDoc1.current.annotationSets).toHaveLength(2);
     });
-     expect(
+    expect(
       resultDoc1.current.annotationSets.map((s: AnnotationSet) => s.name),
     ).toEqual(["Doc1 Set1", "Doc1 Set2"]);
 
@@ -100,7 +100,7 @@ describe("useAnnotationManagement", () => {
     // We might need to explicitly trigger a re-render or wait for the mock state to propagate
     rerenderDoc2({ docId: "doc2" }); // Re-render to ensure it picks up latest global state
     await waitFor(() => {
-        expect(resultDoc2.current.annotationSets).toHaveLength(1);
+      expect(resultDoc2.current.annotationSets).toHaveLength(1);
     });
     expect(resultDoc2.current.annotationSets[0].name).toBe("Doc2 Set1");
   });
@@ -116,7 +116,7 @@ describe("useAnnotationManagement", () => {
 
     // Wait for set to be added
     await waitFor(() => {
-        expect(result.current.annotationSets).toHaveLength(1);
+      expect(result.current.annotationSets).toHaveLength(1);
     });
     setId = (result.current.annotationSets[0] as AnnotationSet).id;
 
@@ -126,7 +126,7 @@ describe("useAnnotationManagement", () => {
 
     // Wait for selection
     await waitFor(() => {
-        expect(result.current.selectedSetId).toBe(setId);
+      expect(result.current.selectedSetId).toBe(setId);
     });
     expect(result.current.selectedAnnotationSet?.id).toBe(setId);
   });
@@ -144,7 +144,7 @@ describe("useAnnotationManagement", () => {
 
     // Wait for sets to be added
     await waitFor(() => {
-        expect(result.current.annotationSets).toHaveLength(2);
+      expect(result.current.annotationSets).toHaveLength(2);
     });
     set1Id = (result.current.annotationSets[0] as AnnotationSet).id;
     set2Id = (result.current.annotationSets[1] as AnnotationSet).id;
@@ -162,8 +162,8 @@ describe("useAnnotationManagement", () => {
 
     // Wait for removal and deselection
     await waitFor(() => {
-        expect(result.current.annotationSets).toHaveLength(1);
-        expect(result.current.selectedSetId).toBeNull();
+      expect(result.current.annotationSets).toHaveLength(1);
+      expect(result.current.selectedSetId).toBeNull();
     });
 
     expect((result.current.annotationSets[0] as AnnotationSet).id).toBe(set2Id);
@@ -183,8 +183,8 @@ describe("useAnnotationManagement", () => {
     act(() => {
       result.current.addAnnotationSet("Set For Doc1");
     });
-     await waitFor(() => {
-        expect(result.current.annotationSets).toHaveLength(1);
+    await waitFor(() => {
+      expect(result.current.annotationSets).toHaveLength(1);
     });
     setId = (result.current.annotationSets[0] as AnnotationSet).id;
     act(() => {
@@ -196,10 +196,10 @@ describe("useAnnotationManagement", () => {
     rerender({ docId: "doc2", storageKey: key });
 
     // Wait for selection to reset (should be quick after rerender)
-     await waitFor(() => {
-        expect(result.current.selectedSetId).toBeNull();
-        expect(result.current.annotationSets).toEqual([]); // Check sets for doc2
-     });
+    await waitFor(() => {
+      expect(result.current.selectedSetId).toBeNull();
+      expect(result.current.annotationSets).toEqual([]); // Check sets for doc2
+    });
 
     expect(result.current.selectedAnnotationSet).toBeNull();
   });

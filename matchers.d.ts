@@ -2,12 +2,12 @@
 // This file extends Bun's native `expect` matchers with
 // the custom matchers provided by @testing-library/jest-dom.
 
-import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 // Import Bun's native Matchers type
 import type {
-  Matchers as BunMatchers,
   AsymmetricMatchers as BunAsymmetricMatchers,
+  Matchers as BunMatchers,
 } from "bun:test";
+import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 
 declare module "bun:test" {
   // Extend Bun's native Matchers interface

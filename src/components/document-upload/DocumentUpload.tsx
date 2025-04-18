@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 // Use 'import type' for types used only in annotations
 import type { DragEvent, ChangeEvent } from "react";
 

@@ -9,6 +9,9 @@
 
 When implementing changes, adhere to the following testing procedures:
 
+*   **Code Style**:
+    *   Write code per the style specified in `biome.json`
+    *   Ensure that all lint errors are resolved after making any edits.
 *   **New Functionality:**
     *   Implement unit tests covering all new code units (functions, components, classes).
     *   Implement behavioral tests (e.g., using React Testing Library) that verify the end-to-end behavior of the new feature from a user interaction perspective.

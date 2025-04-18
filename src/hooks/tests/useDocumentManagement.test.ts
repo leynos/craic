@@ -1,8 +1,8 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
-import { describe, it, expect, beforeEach } from "bun:test";
-import { useDocumentManagement } from "../useDocumentManagement";
-import type { Document } from "../../types";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { resetLocalStorageMock } from "../../test/module-mocks";
+import type { Document } from "../../types";
+import { useDocumentManagement } from "../useDocumentManagement";
 
 // Ensure the mock module is evaluated by importing it
 import "../../test/module-mocks";
@@ -33,7 +33,7 @@ describe("useDocumentManagement", () => {
     });
 
     await waitFor(() => {
-        expect(result.current.documents).toHaveLength(1);
+      expect(result.current.documents).toHaveLength(1);
     });
 
     const doc = result.current.documents[0] as Document;
@@ -52,7 +52,7 @@ describe("useDocumentManagement", () => {
     });
 
     await waitFor(() => {
-        expect(result.current.documents).toHaveLength(1);
+      expect(result.current.documents).toHaveLength(1);
     });
     docId = (result.current.documents[0] as Document).id;
 
@@ -61,7 +61,7 @@ describe("useDocumentManagement", () => {
     });
 
     await waitFor(() => {
-        expect(result.current.selectedDocumentId).toBe(docId);
+      expect(result.current.selectedDocumentId).toBe(docId);
     });
 
     expect(result.current.selectedDocument).not.toBeNull();
@@ -81,7 +81,7 @@ describe("useDocumentManagement", () => {
     });
 
     await waitFor(() => {
-        expect(result.current.documents).toHaveLength(2);
+      expect(result.current.documents).toHaveLength(2);
     });
     doc1Id = (result.current.documents[0] as Document).id;
     doc2Id = (result.current.documents[1] as Document).id;
@@ -96,8 +96,8 @@ describe("useDocumentManagement", () => {
     });
 
     await waitFor(() => {
-        expect(result.current.documents).toHaveLength(1);
-        expect(result.current.selectedDocumentId).toBeNull();
+      expect(result.current.documents).toHaveLength(1);
+      expect(result.current.selectedDocumentId).toBeNull();
     });
 
     expect((result.current.documents[0] as Document).id).toBe(doc2Id);
@@ -116,7 +116,7 @@ describe("useDocumentManagement", () => {
     });
 
     await waitFor(() => {
-        expect(result.current.documents).toHaveLength(2);
+      expect(result.current.documents).toHaveLength(2);
     });
     doc1Id = (result.current.documents[0] as Document).id;
     doc2Id = (result.current.documents[1] as Document).id;
@@ -131,7 +131,7 @@ describe("useDocumentManagement", () => {
     });
 
     await waitFor(() => {
-        expect(result.current.documents).toHaveLength(1);
+      expect(result.current.documents).toHaveLength(1);
     });
     expect(result.current.selectedDocumentId).toBe(doc2Id);
 

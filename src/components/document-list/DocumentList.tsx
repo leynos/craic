@@ -1,4 +1,3 @@
-import React from "react";
 import type { Document } from "../../types";
 
 interface DocumentListProps {
@@ -61,4 +60,4 @@ function DocumentList({
   );
 }
 
-export default DocumentList; 
+export default DocumentList;

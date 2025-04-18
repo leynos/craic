@@ -25,4 +25,6 @@ dist-ssr
 *.sw?
 
 # Vite
-.vite/ 
+.vite/
+
+dist/ 

@@ -1,4 +1,3 @@
-import React from "react";
 import type { ChangeEvent } from "react";
 import type { AnnotationSet } from "../../types";
 
@@ -74,4 +73,4 @@ function DocumentMenu({
   );
 }
 
-export default DocumentMenu; 
+export default DocumentMenu;

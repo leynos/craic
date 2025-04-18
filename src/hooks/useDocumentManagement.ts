@@ -8,7 +8,9 @@ const DEFAULT_DOCUMENTS_KEY = "documents";
 const generateId = () =>
   Date.now().toString(36) + Math.random().toString(36).substring(2);
 
-export function useDocumentManagement(storageKey: string = DEFAULT_DOCUMENTS_KEY) {
+export function useDocumentManagement(
+  storageKey: string = DEFAULT_DOCUMENTS_KEY,
+) {
   const [documents, setDocuments] = useLocalStorageState<Document[]>(
     storageKey,
     {

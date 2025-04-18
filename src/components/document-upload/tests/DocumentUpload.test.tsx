@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
-import { describe, test, expect, mock, afterEach } from "bun:test";
-import { render, screen, cleanup, fireEvent } from "@testing-library/react";
+import { afterEach, describe, expect, mock, test } from "bun:test";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 // Import the actual component
@@ -48,7 +48,6 @@ import DocumentUpload from "../DocumentUpload";
 afterEach(cleanup);
 
 describe("DocumentUpload Component", () => {
-
   test("should render the upload area and display supported formats", () => {
     const handleUpload = mock(() => {});
     const { container } = render(<DocumentUpload onUpload={handleUpload} />);
@@ -147,7 +146,7 @@ describe("DocumentUpload Component", () => {
   // NOTE: Using fireEvent.change instead of userEvent.upload due to
   // RangeError: Maximum call stack size exceeded in Bun/HappyDOM env.
   test("should show error message for invalid file type on click", async () => {
-    const user = userEvent.setup();
+    // const user = userEvent.setup();
     const handleUpload = mock(() => {}); // Should not be called
 
     const { container } = render(<DocumentUpload onUpload={handleUpload} />);

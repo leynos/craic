@@ -5,8 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
-    "strict": true,
-    // "noEmit": true // Referenced projects cannot disable emit
+    "strict": true
   },
-  "include": ["vite.config.ts", "vitest.config.ts"] // Only include config files
-} 
+  "include": ["vite.config.ts", "vitest.config.ts"]
+}
