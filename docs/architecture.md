@@ -29,7 +29,19 @@ This document outlines the key architectural patterns and design decisions made 
 *   **Dedicated Component:** Integration with `@recogito/recogito-js` is localized within the `MarkdownAnnotator` component.
 *   **Annotation Sets:** Annotations are organized into distinct "sets" per document, managed via the `useAnnotationManagement` hook and the `DocumentMenu` component.
 
-## 5. Testing Strategy
+## 5. Data Management
+
+*   **State Management:** Zustand is used for managing global application state. Stores are organised by feature (`src/stores/`) and provide actions for state manipulation and selectors for accessing state slices.
+*   **Client-Side Storage:**
+    *   **User Settings:** Simple user preferences (like theme) are stored directly in `localStorage`.
+    *   **Annotation Storage:**
+        *   User-generated annotations are persisted in browser `localStorage` to ensure data retention across sessions and enable offline access.
+        *   The storage format is JSON, specifically adhering to the BadgerFish convention. This conversion from the original annotation format (implied XML) is handled by the `fast-xml-parser` library using the options: `{ ignoreAttributes: false, attributeNamePrefix: '@', textNodeName: '$' }`.
+        *   This approach was chosen to efficiently store potentially complex, attribute-heavy annotation structures within the limitations of JSON and `localStorage` while adhering to a defined schema (RecogitoJS Web Annotation BadgerFish subset).
+        *   A dedicated module (`src/lib/annotation-storage.ts` - *to be created*) will encapsulate the logic for saving, loading, and parsing annotations to/from `localStorage`.
+*   **API Interaction:** (If applicable) Data fetching and mutations involving a backend API will be handled using standard `fetch` or a dedicated library like `axios` or `tanstack-query`, with clear separation of concerns.
+
+## 6. Testing Strategy
 
 *   **Component Testing Focus:** Testing efforts primarily target individual components using `bun test` and `React Testing Library`.
 *   **User-Centric Queries:** Tests prioritize querying the DOM using methods that simulate user interaction and rely on accessibility attributes (`getByRole`, `getByLabelText`, `getByText`) where possible.
@@ -37,13 +49,15 @@ This document outlines the key architectural patterns and design decisions made 
 *   **Mocking:** Dependencies or browser APIs (like `FileReader`) are mocked as needed within the test setup (`src/test/setup.ts`).
 *   **Test Execution:** `bun test` is the designated command for running the test suite.
 
-## 6. Accessibility
+## 7. Accessibility
 
 *   **Semantic HTML & ARIA:** Emphasis is placed on using appropriate HTML elements and ARIA attributes (`aria-label`, `role`, `htmlFor`) to ensure components are accessible to assistive technologies.
 *   **Testing Library Queries:** Utilizing Testing Library's accessibility-focused queries helps verify that components are perceivable and operable.
 
-## 7. Build & Code Quality
+## 8. Build & Code Quality
 
 *   **Build System:** Vite is used for its fast development server and optimized production builds.
 *   **Static Typing:** TypeScript is used throughout the project to enhance code reliability and maintainability.
-*   **Linting/Formatting:** Biome enforces code style and quality standards. 
+*   **Linting/Formatting:** Biome enforces code style and quality standards.
+
+*   **`fast-xml-parser`:** Chosen for its ability to convert XML/JSON structures according to the specific BadgerFish convention required for serialising annotation data into `localStorage`. See [Annotation Storage](#annotation-storage) for details. 

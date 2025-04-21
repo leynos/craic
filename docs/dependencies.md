@@ -45,3 +45,13 @@ This document outlines the key libraries and tools chosen for this project and t
 
 *   **Bun:**
     *   **Rationale:** A fast, all-in-one JavaScript runtime, bundler, test runner, and package manager. Used for package management (`bun install`), running development server (`bun run dev`), building (`bun run build`), and executing tests (`bun test`).
+
+## Dev Dependencies
+
+*   **Purpose:** Used to parse the specific XML structure of text files produced by the OCR process (e.g., hOCR) into a JSON format suitable for rendering and interaction within the React application.
+*   **Rationale:** Chosen for its performance, maturity, and ability to handle the specific XML formats expected from OCR outputs.
+
+### `fast-xml-parser`
+
+*   **Purpose:** Serializing and deserializing annotation data between its original (likely XML-based) structure and a JSON format suitable for storage in `localStorage`. Specifically handles conversion according to the BadgerFish convention.
+*   **Rationale:** Selected for its efficiency and specific capability to handle the attribute-centric structure defined by the BadgerFish convention, which is required for the annotation storage mechanism. Ensures compliance with the defined JSON schema for annotations.
